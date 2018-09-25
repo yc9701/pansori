@@ -1,6 +1,6 @@
 # Pansori
 
-Pansori is a program for creating a Korean language corpus using YouTube videos with Korean subtitles.
+Pansori is a program for creating a Korean language ASR corpus using YouTube videos with Korean subtitles.
 
 This program currently consists of three modules:
 
