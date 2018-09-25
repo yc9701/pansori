@@ -1,0 +1,12 @@
+data/*
+!data/.gitignore
+bin/
+log/
+tmp/
+
+.DS_Store
+*.tar
+*.gz
+*.tgz
+*.zip
+*.pyc
