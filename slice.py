@@ -28,6 +28,7 @@ def slice_dataset(yt_uri):
 		audio = os.path.join(data_path, vid + ".mp4")
 		subtitle = os.path.join(data_path, vid + ".srt")
 
+		# Retrieving subtitle information
 		audio_content = AudioSegment.from_file(audio, format='mp4')
 		subtitle_content = pysubs2.load(subtitle)
 
@@ -37,6 +38,7 @@ def slice_dataset(yt_uri):
 			os.makedirs(dir)
 			os.makedirs(os.path.join(dir, "valid"))
 
+		# Writing to file
 		for index, event in enumerate(subtitle_content):
 
 			try:
@@ -62,7 +64,7 @@ def slice_dataset(yt_uri):
 		print(exc_type, exc_file, exc_tb.tb_lineno)
 		sys.exit(1)
 
-
+# Executing the function
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(
 		description=__doc__,

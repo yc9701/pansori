@@ -6,6 +6,7 @@ import pysubs2
 from pydub.playback import play
 from pydub import AudioSegment
 
+# Utilizing Google Cloud Speech-to-Text API
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
@@ -22,6 +23,7 @@ def build_phrase_hint(filename):
 		f.close()
 		return hints
 
+# Comparing existing file with Google Cloud output
 def compare_speech(fname1, fname2):
 	f1 = open(fname1, 'r')
 	f2 = open(fname2, 'r')
@@ -47,6 +49,7 @@ def validate_dataset(yt_uri):
 		print("Exception: {}".format(e))
 		sys.exit(1)
 
+	# Creating array of wav files
 	files = []
 	for file in os.listdir(dir):
 		if file.endswith('.wav'):
@@ -58,6 +61,7 @@ def validate_dataset(yt_uri):
 		subtitle = os.path.join(dir, event_no + 's.txt')
 		transcript = os.path.join(dir, event_no + 't.txt')
 
+		# Printing process and testing files
 		try:
 			file_path = os.path.join(dir, file)
 			print(file_path)
@@ -77,6 +81,7 @@ def validate_dataset(yt_uri):
 			subtitle_file = io.open(subtitle, 'r')
 			transcript_file = io.open(transcript, 'w')
 
+			# Determining appropriateness of existing subtitle
 			for result in response.results:
 				print(u"Subtitle: {}".format(subtitle_file.read()))
 				print(u"Transcript: {}".format(result.alternatives[0].transcript))
@@ -93,6 +98,7 @@ def validate_dataset(yt_uri):
 			subtitle_file.close()
 			transcript_file.close()
 
+			# Moving appropriate files to 'valid' dir
 			print(compare_speech(subtitle, transcript))
 			if compare_speech(subtitle, transcript):
 				valid = os.path.join(dir, "valid")
@@ -108,7 +114,7 @@ def validate_dataset(yt_uri):
 			print(exc_type, exc_file, exc_tb.tb_lineno)
 			sys.exit(1)
 
-
+# Executing function
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(
 		description=__doc__,

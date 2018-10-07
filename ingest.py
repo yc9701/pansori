@@ -11,9 +11,9 @@ import sys, os
 import argparse
 from urllib.parse import parse_qs, urlparse
 
-data_path = "./data"
+data_path = "./data" # setting the path for the videos to be downloaded
 
-def ingest_dataset(yt_uri):
+def ingest_dataset(yt_uri): # function for ingesting when given a url
 	# Use vid as the diretory name for download and processing
 	vids = parse_qs(urlparse(yt_uri).query, keep_blank_values=True).get('v')
 	vid = None if vids == None else vids[0]
@@ -42,7 +42,7 @@ def ingest_dataset(yt_uri):
 		print(exc_type, exc_file, exc_tb.tb_lineno)
 		sys.exit(1)
 
-
+# Executing the function
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(
 		description=__doc__,
