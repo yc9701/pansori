@@ -42,7 +42,7 @@ def slice_dataset(yt_uri):
 		for index, event in enumerate(subtitle_content):
 
 			try:
-				ev_subtitle = os.path.join(dir, str(index).zfill(4) + 's.txt')
+				ev_subtitle = os.path.join(dir, str(index).zfill(4) + '.txt')
 				ev_audio = os.path.join(dir, str(index).zfill(4) + '.wav')
 
 				ev_subtitle_file = open(ev_subtitle, 'w')
