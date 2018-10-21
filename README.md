@@ -8,7 +8,6 @@ This program currently consists of three modules:
 - Slice: Slices the audio file based on the timing information within the subtitle file and assigns the appropriate subtitle to the audio slice
 - Validate: Compares the subtitle information to a transcription obtained through using the Google Cloud Speech-to-Text API
 
-This program automatically creates audio segments with aligned text labels by utilizing the timing information stored in the subtitle data to build the corpus faster.
+This program automatically creates audio segments with aligned text labels by utilizing the timing information stored in the subtitle data to build the corpus faster. It also automatically verifies the audio segments for accuracy using the Google Cloud Speech API.
 
-The program is currently being used for a project to create a Korean language corpus and can be used for other languages.
-
+The program is currently being used for a project to create a Korean language corpus and can be used for other languages. In order to create a more comprehensive dataset in the future, I plan to reach out to owners of such content, such as public broadcasting companies in Korea, to include more content with their permission.

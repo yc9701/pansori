@@ -58,7 +58,7 @@ def validate_dataset(yt_uri):
 
 	for file in files:
 		event_no = os.path.splitext(os.path.basename(file))[0]
-		subtitle = os.path.join(dir, event_no + 's.txt')
+		subtitle = os.path.join(dir, event_no + '.txt')
 		transcript = os.path.join(dir, event_no + 't.txt')
 
 		# Printing process and testing files
