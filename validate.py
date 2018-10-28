@@ -61,6 +61,9 @@ def validate_dataset(yt_uri):
 		subtitle = os.path.join(dir, event_no + '.txt')
 		transcript = os.path.join(dir, event_no + 't.txt')
 
+                # Speech client
+		client = speech.SpeechClient()
+
 		# Printing process and testing files
 		try:
 			file_path = os.path.join(dir, file)
@@ -75,7 +78,6 @@ def validate_dataset(yt_uri):
 				speech_contexts=[{"phrases": build_phrase_hint(subtitle)}],
 				language_code='ko-kr')
 
-			client = speech.SpeechClient()
 			response = client.recognize(config, audio)
 
 			subtitle_file = io.open(subtitle, 'r')
