@@ -18,13 +18,17 @@ def ingest_dataset(yt_uri): # function for ingesting when given a url
 	vids = parse_qs(urlparse(yt_uri).query, keep_blank_values=True).get('v')
 	vid = None if vids == None else vids[0]
 
+	v_dir = os.path.join(data_path, vid)
+
 	try:
 		# Get information on the YouTube content
 		yt = YouTube(yt_uri)
 
+		os.makedirs(v_dir, exist_ok=True)
+
 		# Filename for audio stream (.mp4) and subtitle (.srt) files
 		audio = vid + '.mp4'
-		subtitle = os.path.join(data_path, vid + '.srt')
+		subtitle = os.path.join(v_dir, vid + '.srt')
 
 		# Download subtitle and write to an .srt file
 		subtitle_content = yt.captions.get_by_language_code('ko')
@@ -34,7 +38,7 @@ def ingest_dataset(yt_uri): # function for ingesting when given a url
 		# Download audio stream
 		# download() auto appends file extension (.mp4)
 		yt.streams.filter(only_audio=True, subtype='mp4').first().download(
-			output_path=data_path, filename=vid)
+			output_path=v_dir, filename=vid)
 
 	except:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
