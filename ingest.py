@@ -21,18 +21,18 @@ def ingest_dataset(yt_uri): # function for ingesting when given a url
 
 	v_dir = os.path.join(data_path, vid)
 
+	# Filename for audio stream (.mp4) and subtitle (.srt) files
+	audio = os.path.join(v_dir, vid + '.mp4')
+	subtitle = os.path.join(v_dir, vid + '.srt')
+
+	if Path(audio).exists() and Path(subtitle).exists():
+		sys.exit(1)	
+
 	try:
 		# Get information on the YouTube content
 		yt = YouTube(yt_uri)
 
 		os.makedirs(v_dir, exist_ok=True)
-
-		# Filename for audio stream (.mp4) and subtitle (.srt) files
-		audio = os.path.join(v_dir, vid + '.mp4')
-		subtitle = os.path.join(v_dir, vid + '.srt')
-
-		if Path(audio).exists() and Path(subtitle).exists():
-			sys.exit(1)
 
 		# Download subtitle and write to an .srt file
 		subtitle_content = yt.captions.get_by_language_code('ko')
