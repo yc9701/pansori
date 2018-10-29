@@ -7,6 +7,7 @@ from pydub.playback import play
 from pydub import AudioSegment
 
 import sys, os
+from pathlib import Path
 
 import argparse
 from urllib.parse import parse_qs, urlparse
@@ -27,8 +28,11 @@ def ingest_dataset(yt_uri): # function for ingesting when given a url
 		os.makedirs(v_dir, exist_ok=True)
 
 		# Filename for audio stream (.mp4) and subtitle (.srt) files
-		audio = vid + '.mp4'
+		audio = os.path.join(v_dir, vid + '.mp4')
 		subtitle = os.path.join(v_dir, vid + '.srt')
+
+		if Path(audio).exists() and Path(subtitle).exists():
+			sys.exit(1)
 
 		# Download subtitle and write to an .srt file
 		subtitle_content = yt.captions.get_by_language_code('ko')
