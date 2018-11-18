@@ -82,6 +82,7 @@ def validate_dataset(yt_uri, matching, in_stage, out_stage, src_stage):
 	v_dir = os.path.join(data_path, vid)
 	in_dir = os.path.join(v_dir, in_stage)
 	out_dir = os.path.join(v_dir, out_stage)
+	ext_dir = os.path.join(v_dir, out_stage + 'ext')
 
 	src_dir = os.path.join(v_dir, src_stage)
 
@@ -101,6 +102,7 @@ def validate_dataset(yt_uri, matching, in_stage, out_stage, src_stage):
 	files.sort()
 
 	os.makedirs(out_dir, exist_ok=True)
+	os.makedirs(ext_dir, exist_ok=True)
 
 	# Speech client
 	client = speech.SpeechClient()
@@ -138,40 +140,51 @@ def validate_dataset(yt_uri, matching, in_stage, out_stage, src_stage):
 			transcript_file = io.open(transcript, 'w')
 
 			# Determining appropriateness of existing subtitle
+			result_script = ""
+			print(u"Subtitle: {}".format(subtitle_file.read()))
 			for result in response.results:
-				print(u"Subtitle: {}".format(subtitle_file.read()))
-				print(u"Transcript: {}".format(result.alternatives[0].transcript))
+				print(u"Response: {}".format(result.alternatives[0].transcript))
 				print("Confidence: {}".format(result.alternatives[0].confidence))
+				result_script += result.alternatives[0].transcript
 
-				try:
-					transcript_file.write(result.alternatives[0].transcript)
-				except:
-					exc_type, exc_obj, exc_tb = sys.exc_info()
-					exc_file = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-					print(exc_type, exc_file, exc_tb.tb_lineno)
-					sys.exit(1)
+			print(u"Transcript: {}".format(result_script))
+
+			try:
+				transcript_file.write(result_script)
+			except:
+				exc_type, exc_obj, exc_tb = sys.exc_info()
+				exc_file = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+				print(exc_type, exc_file, exc_tb.tb_lineno)
+				sys.exit(1)
 
 			subtitle_file.close()
 			transcript_file.close()
 
+			score = similarity_score(subtitle, transcript)
+
 			# Moving appropriate files to output pipeline stage
 			if matching == 'exact':
 				result = exact_match(subtitle, transcript)
-				score = 1.0 if result == True else 0.0
 			elif matching == 'similarity':
-				score = similarity_score(subtitle, transcript)
 				result = score >= 0.9 
 			else: # matching == 'subs' or else
 				result = substring_match(subtitle, transcript)
-				score = 1.0 if result == True else 0.0
-
-			print("Result: {}, Score: {}".format(result, score))
-			print("")
 
 			if result == True:
 				shutil.move(file_path_src, out_dir)
 				shutil.move(subtitle_src, out_dir)
 				shutil.move(transcript_src, out_dir)
+				message = "Matched"
+			elif score >= 0.95:
+				shutil.move(file_path_src, ext_dir)
+				shutil.move(subtitle_src, ext_dir)
+				shutil.move(transcript_src, ext_dir)
+				message = "Matched (Similar)"
+			else:
+				message = "Not Matched"
+
+			print("Result: {}, Score: {}".format(message, score))
+			print("")
 
 		except:
 			exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -189,7 +202,7 @@ if __name__ == '__main__':
 		'path', help="URL of the video file to make speech recognition corpus from")
 
 	parser.add_argument(
-		'-m', '--match', default='subs', choices=['exact', 'subs', 'similarity'],
+		'-m', '--match', default='exact', choices=['exact', 'subs', 'similarity'],
 		help="matching method--exact, substring, similarity (default: %(default)s)")
 
 	parser.add_argument(
