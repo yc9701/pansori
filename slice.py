@@ -42,6 +42,9 @@ def slice_dataset(yt_uri, align_padding, out_stage):
 		for index, event in enumerate(subtitle_content):
 
 			try:
+				if event.text.translate(punctuation_filter) == "":
+				 	continue
+				
 				ev_subtitle = os.path.join(out_dir, str(index).zfill(4) + '.txt')
 				ev_audio = os.path.join(out_dir, str(index).zfill(4) + '.wav')
 
