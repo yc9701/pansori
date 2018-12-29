@@ -14,7 +14,7 @@ from urllib.parse import parse_qs, urlparse
 
 data_path = "./data"
 
-def slice_dataset(yt_uri, align_padding, out_stage):
+def slice_dataset(yt_uri, left_align, right_align, out_stage):
 	# Use vid as the diretory name for download and processing
 	vids = parse_qs(urlparse(yt_uri).query, keep_blank_values=True).get('v')
 	vid = None if vids == None else vids[0]
@@ -52,8 +52,8 @@ def slice_dataset(yt_uri, align_padding, out_stage):
 				ev_subtitle_file.write(event.text.translate(punctuation_filter))
 
 				ev_audio_content = audio_content[
-					max(0, event.start - align_padding):
-					min(event.end + align_padding, len(audio_content))]
+					max(0, event.start - left_align):
+					min(event.end + right_align, len(audio_content))]
 				ev_audio_content = ev_audio_content.set_channels(1)
 				ev_audio_content.export(ev_audio, format='wav')
 
@@ -79,21 +79,21 @@ if __name__ == '__main__':
 		'path', help="URL of the video file to make speech recognition corpus from")
 
 	parser.add_argument(
-		'-o', '--output', type=int, default=00,
+		'-o', '--output', type=str, default="00",
 		help="output pipeline stage")
 
 	parser.add_argument(
-		'-a', '--align', type=int, default=1000,
-		help="padding for start / end alignment (in msec)")
+		'-l', '--left', type=int, default=0,
+		help="padding for left (start) alignment (in msec)")
+
+	parser.add_argument(
+		'-r', '--right', type=int, default=0,
+		help="padding for right (end) alignment (in msec)")
 
 	args = parser.parse_args()
 	
 	if args.path.startswith('https://'):
-		if args.output >= 0:
-			slice_dataset(args.path, args.align, str(args.output).zfill(2))
-		else:
-			print("Pipeline stages should not be negative")
-			sys.exit(1)
+		slice_dataset(args.path, args.left, args.right, args.output)
 	else:
 		print("URL of the video file should start with https://")
 		sys.exit(1)
