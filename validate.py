@@ -74,7 +74,7 @@ def similarity_score(fname1, fname2):
 
 data_path = "./data"
 
-def validate_dataset(yt_uri, matching, in_stage, out_stage, src_stage):
+def validate_dataset(yt_uri, matching, in_stage, out_stage):
 	# Use vid as the diretory name for download and processing
 	vids = parse_qs(urlparse(yt_uri).query, keep_blank_values=True).get('v')
 	vid = None if vids == None else vids[0]
@@ -83,8 +83,6 @@ def validate_dataset(yt_uri, matching, in_stage, out_stage, src_stage):
 	in_dir = os.path.join(v_dir, in_stage)
 	out_dir = os.path.join(v_dir, out_stage)
 	ext_dir = os.path.join(v_dir, out_stage + 'ext')
-
-	src_dir = os.path.join(v_dir, src_stage)
 
 	# Get information on the YouTube content
 	try:
@@ -112,10 +110,7 @@ def validate_dataset(yt_uri, matching, in_stage, out_stage, src_stage):
 		subtitle = os.path.join(in_dir, event_no + '.txt')
 		transcript = os.path.join(in_dir, event_no + 't.txt')
 
-		subtitle_src = os.path.join(src_dir, event_no + '.txt')
-		transcript_src = os.path.join(src_dir, event_no + 't.txt')
-
-		if Path(subtitle_src).exists() == False:
+		if Path(subtitle).exists() == False:
 			continue
 
 		# Printing process and testing files
@@ -125,8 +120,6 @@ def validate_dataset(yt_uri, matching, in_stage, out_stage, src_stage):
 			audio_file = io.open(file_path, 'rb')
 			audio_content = audio_file.read()
 			audio_file.close()
-
-			file_path_src = os.path.join(src_dir, file)
 
 			audio = types.RecognitionAudio(content=audio_content)
 			config = types.RecognitionConfig(
@@ -171,14 +164,14 @@ def validate_dataset(yt_uri, matching, in_stage, out_stage, src_stage):
 				result = substring_match(subtitle, transcript)
 
 			if result == True:
-				shutil.move(file_path_src, out_dir)
-				shutil.move(subtitle_src, out_dir)
-				shutil.move(transcript_src, out_dir)
+				shutil.move(file_path, out_dir)
+				shutil.move(subtitle, out_dir)
+				shutil.move(transcript, out_dir)
 				message = "Matched"
 			elif score >= 0.95:
-				shutil.move(file_path_src, ext_dir)
-				shutil.move(subtitle_src, ext_dir)
-				shutil.move(transcript_src, ext_dir)
+				shutil.move(file_path, ext_dir)
+				shutil.move(subtitle, ext_dir)
+				shutil.move(transcript, ext_dir)
 				message = "Matched (Similar)"
 			else:
 				message = "Not Matched"
@@ -211,17 +204,13 @@ if __name__ == '__main__':
 	parser.add_argument(
 		'-o', '--output', type=int, default=99, help="output pipeline stage")
 
-	parser.add_argument(
-		'-s', '--source', type=int, default=00, help="source pipeline stage")
-
 	args = parser.parse_args()
 
 	if args.path.startswith('https://'):
 		if args.input >= 0 and args.output >= 0:
 			validate_dataset(args.path, args.match,
 				str(args.input).zfill(2), 
-				str(args.output).zfill(2), 
-				str(args.source).zfill(2))
+				str(args.output).zfill(2))
 		else:
 			print("Pipeline stages should not be negative")
 			sys.exit(1)
